@@ -27,7 +27,7 @@ class EmergencyDuty {
 
             lastAssigned = currentDuty
 
-            val dateString = "${month}월 ${day}일" + if (isHoliday) "(휴일)" else ""
+            val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}" + if (isHoliday) "(휴일)" else ""
             schedule.add("$dateString $currentDuty")
 
             // 다음 순서를 위해 근무자 목록 업데이트

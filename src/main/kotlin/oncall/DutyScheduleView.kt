@@ -4,7 +4,7 @@ import camp.nextstep.edu.missionutils.Console
 class DutyScheduleView {
     // 사용자에게 메시지 표시
     fun displayMessage(message: String) {
-        print(message)
+        println(message)
     }
 
     // 사용자 입력 받기
@@ -14,6 +14,7 @@ class DutyScheduleView {
 
     // 근무 스케줄 표시
     fun displaySchedule(schedule: List<String>) {
+        println()
         schedule.forEach { println(it) }
     }
 
