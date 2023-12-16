@@ -1,17 +1,24 @@
 package oncall
 import camp.nextstep.edu.missionutils.Console
 
-
 class DutyScheduleView {
+    // 사용자에게 메시지 표시
+    fun displayMessage(message: String) {
+        println(message)
+    }
+
+    // 사용자 입력 받기
     fun getInput(): String {
-        // 사용자 입력 받기
+        return Console.readLine()
     }
 
+    // 근무 스케줄 표시
     fun displaySchedule(schedule: List<String>) {
-        // 근무표 출력
+        schedule.forEach { println(it) }
     }
 
+    // 오류 메시지 표시
     fun displayError(message: String) {
-        // 에러 메시지 출력
+        println("[ERROR] $message")
     }
 }
