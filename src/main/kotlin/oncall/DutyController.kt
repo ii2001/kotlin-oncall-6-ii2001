@@ -45,6 +45,11 @@ class DutyController {
     }
 
     private fun parseDutyRoster(input: String): MutableList<String> {
-        return input.split(",").map { it.trim() }.toMutableList()
+        val roster = input.split(",").map { it.trim() }
+        if (roster.size !in 5..35) {
+            throw IllegalArgumentException("사원 수가 5명에서 35명 사이여야 합니다.")
+        }
+        return roster.toMutableList()
     }
+
 }
