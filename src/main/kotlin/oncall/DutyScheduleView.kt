@@ -19,6 +19,6 @@ class DutyScheduleView {
 
     // 오류 메시지 표시
     fun displayError(message: String) {
-        println("[ERROR] $message")
+        println("$message")
     }
 }
