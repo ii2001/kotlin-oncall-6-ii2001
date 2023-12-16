@@ -30,14 +30,20 @@ class DutyController {
                 val weekdayDutyRoster = parseDutyRoster(view.getInput())
                 view.displayMessage("휴일 비상 근무 순번대로 사원 닉네임을 입력하세요> ")
                 val weekendDutyRoster = parseDutyRoster(view.getInput())
-                if (weekdayDutyRoster.isNotEmpty() && weekendDutyRoster.isNotEmpty()) {
-                    return weekdayDutyRoster to weekendDutyRoster
-                } else {
-                    view.displayError("[ERROR] 유효하지 않은 입력 값입니다. 다시 입력해 주세요.")
-                }
+                return validateDutyRosters(weekdayDutyRoster, weekendDutyRoster)
             } catch (e: IllegalArgumentException) {
-                view.displayError("[ERROR] 유효하지 않은 입력 값입니다. 다시 입력해 주세요.")
-            } } }
+                view.displayError("[ERROR] ${e.message} 다시 입력해 주세요.")
+            }
+        }
+    }
+
+    private fun validateDutyRosters(weekdayDutyRoster: MutableList<String>, weekendDutyRoster: MutableList<String>): Pair<MutableList<String>, MutableList<String>> {
+        if (weekdayDutyRoster.isNotEmpty() && weekendDutyRoster.isNotEmpty()) {
+            return weekdayDutyRoster to weekendDutyRoster
+        } else {
+            throw IllegalArgumentException("유효하지 않은 입력 값")
+        }
+    }
 
     private fun parseMonthAndStartDay(input: String): Pair<Int, String> {
         val validDays = setOf("월", "화", "수", "목", "금", "토", "일")
