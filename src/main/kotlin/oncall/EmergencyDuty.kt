@@ -2,34 +2,32 @@ package oncall
 
 class EmergencyDuty {
     private val holidays = setOf("1/1", "3/1", "5/5", "6/6", "8/15", "10/3", "10/9", "12/25")
-
     fun assignDuty(month: Int, startDay: String, weekdayDuties: MutableList<String>, weekendDuties: MutableList<String>): List<String> {
         val schedule = mutableListOf<String>()
         val totalDays = getDaysInMonth(month)
         val dayOffset = getDayOffset(startDay)
         var lastAssigned = ""
-
         for (day in 1..totalDays) {
-            val dayOfWeek = (day + dayOffset - 1) % 7
-            val isHoliday = holidays.contains("${month}/${day}")
-            val isWeekend = dayOfWeek == 5 || dayOfWeek == 6
-
-            val dutyList = if (isWeekend || isHoliday) weekendDuties else weekdayDuties
-
-            // 연속 근무 방지 로직
-            var currentDuty=preventionContinuousWork(lastAssigned,dutyList)
-            lastAssigned = currentDuty
-
-            val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}" + if (isHoliday) "(휴일)" else ""
-            schedule.add("$dateString $currentDuty".trim())
-
-            // 다음 순서를 위해 근무자 목록 업데이트
-            dutyList.rotate()
+            schedule.add(assignDutyForDay(month, day, dayOffset, lastAssigned, weekdayDuties, weekendDuties).also {
+                lastAssigned = it.split(" ").last()
+            })
         }
 
         return schedule
     }
+    private fun assignDutyForDay(month: Int, day: Int, dayOffset: Int, lastAssigned: String, weekdayDuties: MutableList<String>, weekendDuties: MutableList<String>): String {
+        val dayOfWeek = (day + dayOffset - 1) % 7
+        val isHoliday = holidays.contains("${month}/${day}")
+        val isWeekend = dayOfWeek == 5 || dayOfWeek == 6
+        val dutyList = if (isWeekend || isHoliday) weekendDuties else weekdayDuties
+        var currentDuty = preventionContinuousWork(lastAssigned, dutyList)
+        val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}" + if (isHoliday) "(휴일)" else ""
 
+        dutyList.rotate()
+
+        return "$dateString $currentDuty".trim()
+    }
+    // 연속 근무 방지 로직
     private fun preventionContinuousWork(lastAssigned: String,dutyList: MutableList<String>): String {
         var currentDuty = dutyList.first()
         if (currentDuty == lastAssigned) {
