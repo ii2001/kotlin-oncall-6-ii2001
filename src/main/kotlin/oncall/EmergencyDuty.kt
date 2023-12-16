@@ -7,9 +7,7 @@ class EmergencyDuty {
         val schedule = mutableListOf<String>()
         val totalDays = getDaysInMonth(month)
         val dayOffset = getDayOffset(startDay)
-
         var lastAssigned = ""
-
         for (day in 1..totalDays) {
             val dayOfWeek = (day + dayOffset - 1) % 7
             val isHoliday = holidays.contains("${month}/${day}")
@@ -28,7 +26,7 @@ class EmergencyDuty {
             lastAssigned = currentDuty
 
             val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}" + if (isHoliday) "(휴일)" else ""
-            schedule.add("$dateString $currentDuty")
+            schedule.add("$dateString $currentDuty".trim())
 
             // 다음 순서를 위해 근무자 목록 업데이트
             dutyList.rotate()
@@ -36,6 +34,8 @@ class EmergencyDuty {
 
         return schedule
     }
+
+
 
     private fun MutableList<String>.swap(index1: Int, index2: Int) {
         val temp = this[index1]
