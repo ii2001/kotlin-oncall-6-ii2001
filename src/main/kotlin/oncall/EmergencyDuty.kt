@@ -8,21 +8,16 @@ class EmergencyDuty {
         val totalDays = getDaysInMonth(month)
         val dayOffset = getDayOffset(startDay)
         var lastAssigned = ""
+
         for (day in 1..totalDays) {
             val dayOfWeek = (day + dayOffset - 1) % 7
             val isHoliday = holidays.contains("${month}/${day}")
             val isWeekend = dayOfWeek == 5 || dayOfWeek == 6
 
             val dutyList = if (isWeekend || isHoliday) weekendDuties else weekdayDuties
-            var currentDuty = dutyList.first()
 
             // 연속 근무 방지 로직
-            if (currentDuty == lastAssigned) {
-                // 첫 번째 근무자와 두 번째 근무자의 순서를 교환
-                dutyList.swap(0, 1)
-                currentDuty = dutyList.first()
-            }
-
+            var currentDuty=preventionContinuousWork(lastAssigned,dutyList)
             lastAssigned = currentDuty
 
             val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}" + if (isHoliday) "(휴일)" else ""
@@ -35,7 +30,15 @@ class EmergencyDuty {
         return schedule
     }
 
-
+    private fun preventionContinuousWork(lastAssigned: String,dutyList: MutableList<String>): String {
+        var currentDuty = dutyList.first()
+        if (currentDuty == lastAssigned) {
+            // 첫 번째 근무자와 두 번째 근무자의 순서를 교환
+            dutyList.swap(0, 1)
+            currentDuty = dutyList.first()
+        }
+        return currentDuty
+    }
 
     private fun MutableList<String>.swap(index1: Int, index2: Int) {
         val temp = this[index1]
