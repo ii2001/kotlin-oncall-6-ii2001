@@ -41,7 +41,7 @@ class DutyController {
         return month to startDay
     }
 
-    private fun parseDutyRoster(input: String): List<String> {
-        return input.split(",").map { it.trim() }
+    private fun parseDutyRoster(input: String): MutableList<String> {
+        return input.split(",").map { it.trim() }.toMutableList()
     }
 }

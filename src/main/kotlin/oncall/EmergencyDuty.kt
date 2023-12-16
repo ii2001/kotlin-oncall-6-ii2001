@@ -3,51 +3,54 @@ package oncall
 class EmergencyDuty {
     private val holidays = setOf("1/1", "3/1", "5/5", "6/6", "8/15", "10/3", "10/9", "12/25")
 
-    // 비상 근무 스케줄을 할당하는 함수
-    fun assignDuty(month: Int, startDay: String, weekdayDuties: List<String>, weekendDuties: List<String>): List<String> {
+    fun assignDuty(month: Int, startDay: String, weekdayDuties: MutableList<String>, weekendDuties: MutableList<String>): List<String> {
         val schedule = mutableListOf<String>()
         val totalDays = getDaysInMonth(month)
         val dayOffset = getDayOffset(startDay)
 
-        var weekdayIndex = 0
-        var weekendIndex = 0
-        var lastAssigned = "" // 마지막으로 할당된 근무자를 추적
+        var lastAssigned = ""
 
         for (day in 1..totalDays) {
             val dayOfWeek = (day + dayOffset - 1) % 7
-            val date = "${month}/${day}"
-            val isHoliday = holidays.contains(date)
+            val isHoliday = holidays.contains("${month}/${day}")
             val isWeekend = dayOfWeek == 5 || dayOfWeek == 6
 
-            // 현재 날짜에 할당할 근무자 결정
-            var currentDuty = if (isWeekend || isHoliday) {
-                weekendDuties[weekendIndex % weekendDuties.size]
-            } else {
-                weekdayDuties[weekdayIndex % weekdayDuties.size]
-            }
+            val dutyList = if (isWeekend || isHoliday) weekendDuties else weekdayDuties
+            var currentDuty = dutyList.first()
 
             // 연속 근무 방지 로직
             if (currentDuty == lastAssigned) {
-                if (isWeekend || isHoliday) {
-                    currentDuty = weekendDuties[++weekendIndex % weekendDuties.size]
-                } else {
-                    currentDuty = weekdayDuties[++weekdayIndex % weekdayDuties.size]
-                }
+                // 첫 번째 근무자와 두 번째 근무자의 순서를 교환
+                dutyList.swap(0, 1)
+                currentDuty = dutyList.first()
             }
 
-            // 다음 날짜에 사용하기 위해 마지막으로 할당된 근무자 업데이트
             lastAssigned = currentDuty
 
-            // 날짜 문자열 생성
-            val dateString = "${month}월 ${day}일 ${convertDayOfWeekToString(dayOfWeek)}"
-            val holidayNote = if (isHoliday) "(휴일)" else ""
-            schedule.add("$dateString$holidayNote $currentDuty")
+            val dateString = "${month}월 ${day}일" + if (isHoliday) "(휴일)" else ""
+            schedule.add("$dateString $currentDuty")
+
+            // 다음 순서를 위해 근무자 목록 업데이트
+            dutyList.rotate()
         }
 
         return schedule
     }
 
-    // 주어진 월의 총 일수를 반환하는 함수
+    private fun MutableList<String>.swap(index1: Int, index2: Int) {
+        val temp = this[index1]
+        this[index1] = this[index2]
+        this[index2] = temp
+    }
+
+    private fun MutableList<String>.rotate() {
+        if (this.size > 1) {
+            val first = this.removeAt(0)
+            this.add(first)
+        }
+    }
+
+// 주어진 월의 총 일수를 반환하는 함수
     private fun getDaysInMonth(month: Int): Int {
         return when (month) {
             2 -> 28
